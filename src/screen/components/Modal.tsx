@@ -1,24 +1,26 @@
 import React, {useCallback} from 'react'
-import {Linking, Modal, Text, TouchableOpacity, View} from "react-native";
+import {Linking, Modal, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
 // @ts-ignore
 import styled from "styled-components/native";
 
 const WrapModal = styled.View`
   flex: 1;
   background-color: rgba(0,0,0,0.5);
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
 `
 
 const Card = styled.View`
-  width: 60%;
+  width: 90%;
   background-color: white;
-  padding: 30px 16px 30px 16px;
+  padding: 20px 16px 20px 16px;
   border-radius: 20px;
+  margin-bottom: 15px;
 `
 
-const CustomButton = ({onHandle,item} : {
+const CustomButton = ({onHandle,item,label} : {
     item: string;
+    label: string;
     onHandle: (item: string) => void;
 }) => {
     const onPress = useCallback(() => {
@@ -27,7 +29,7 @@ const CustomButton = ({onHandle,item} : {
 
     return (
         <TouchableOpacity onPress={onPress}>
-            <Text>{item}</Text>
+            <Text>{label}{' '}{item}</Text>
         </TouchableOpacity>
     )
 }
@@ -52,26 +54,32 @@ const CustomModal = ({modal,setModal,dataModal} : {
         await Linking.openURL(label + item)
     },[modal])
 
+    const onCloseModal = useCallback(() => {
+        setModal('')
+    },[])
+
     return (
         <Modal
             animationType='fade'
             statusBarTranslucent
             transparent
             visible={modal !== ''}
-            onRequestClose={() => {
-                setModal('');
-            }}
+            onRequestClose={onCloseModal}
         >
-            <WrapModal>
-                <Card>
+            <TouchableWithoutFeedback onPress={onCloseModal}>
+                <WrapModal>
                     {dataModal && dataModal.length > 0 && dataModal.map((item,index) => (
-                        <CustomButton item={item} onHandle={onHandleButton} key={index}/>
+                        <Card key={index}>
+                            <CustomButton item={item} label={modal} onHandle={onHandleButton}/>
+                        </Card>
                     ))}
-                    <TouchableOpacity onPress={() => setModal('')}>
-                        <Text>Cancel</Text>
-                    </TouchableOpacity>
-                </Card>
-            </WrapModal>
+                    <Card>
+                        <TouchableOpacity onPress={onCloseModal}>
+                            <Text style={{textAlign: 'center'}}>Cancel</Text>
+                        </TouchableOpacity>
+                    </Card>
+                </WrapModal>
+            </TouchableWithoutFeedback>
         </Modal>
     )
 }

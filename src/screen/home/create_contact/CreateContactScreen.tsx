@@ -10,27 +10,29 @@ import {
     Keyboard,
     FlatList,
     View,
-    KeyboardTypeOptions
+    KeyboardTypeOptions, InteractionManager, Alert
 } from "react-native";
 
 import Container from "../../components/Container";
 import Header from '../../components/Header'
-import {ICONS} from "../../../assets";
 import Avatar from "../../components/Avatar";
 import CustomButtonListContainer from "./components/button_list";
-import {updateContactAction} from "../../../store/action";
+import {updateContactAction} from "../../../store/contact";
 import {ContactInformation} from "../../../type";
+import {useContactIdList} from "../../../store/contact";
+import {goBack, navigateToContactDetailScreen, reset} from "../../../utils/navigation";
+import {Colors} from "../../../themes/Colors";
 
 const CustomTitleLeftButton = styled.Text`
   font-weight: 400;
   font-size: 18px;
   line-height: 22px;
   letter-spacing: -0.41px;
-  color: #F2A54A;
+  color: ${Colors.yellowOrange};
 `
 
 const CustomTitleRightButton = styled(CustomTitleLeftButton)`
-  color: #828282;
+  color: ${Colors.oldSilver};
 `
 
 const WrapAvatarContainer = styled.View`
@@ -54,18 +56,19 @@ const CustomTextInput = styled.TextInput`
   width: 90%;
   height: 44px;
   border-bottom-width: 0.5px;
-  border-bottom-color: #00000016;
+  border-bottom-color: ${Colors.black10};
   font-weight: 400;
   font-size: 15px;
   line-height: 22px;
   letter-spacing: -0.41px;
+  color: ${Colors.darkCharcoal};
 `
 
 const WrapButton = styled.View`
   height: 44px;
   width: 90%;
   border-bottom-width: 1px;
-  border-bottom-color: #00000016;
+  border-bottom-color: ${Colors.black10};
   justify-content: center;
 `
 
@@ -78,7 +81,7 @@ const CustomTitleButton = styled.Text`
   font-weight: 400;
   line-height: 22px;
   letter-spacing: -0.41px;
-  color: #333333;
+  color: ${Colors.darkCharcoal};
 `
 
 const Icon = styled.Image`
@@ -92,12 +95,16 @@ interface ButtonList {
     keyName: string;
     data: string | Array<string>;
     keyboardType?: KeyboardTypeOptions;
+    label?: string;
 }
 
 const CreateContactScreen = () => {
     const navigation = useNavigation<any>();
     const params = useRoute<any>();
     const itemDefault = params?.params?.item;
+    const id = params?.params?.id;
+
+    const contactIdList: any = useContactIdList();
 
     const [item,setItem] = useState<ContactInformation>({
         value: '',
@@ -128,18 +135,21 @@ const CreateContactScreen = () => {
     const buttonList: Array<ButtonList>  = [
         {
             title: 'thêm số điện thoại',
+            label: 'số điện thoại',
             keyName: 'phoneNumberList',
             data: itemDefault?.phoneNumberList || [],
             keyboardType: "numeric"
         },
         {
             title: 'thêm email',
+            label: 'email',
             keyName: 'emailList',
             data: itemDefault?.emailList || [],
             keyboardType: 'email-address'
         },
         {
             title: 'thêm địa chỉ',
+            label: 'địa chỉ',
             keyName: 'addressList',
             data: itemDefault?.addressList || [],
             keyboardType: 'default'
@@ -153,24 +163,31 @@ const CreateContactScreen = () => {
 
     const onHandleContact = useCallback(() => {
         if(item) {
+            const spaceText = item.firstName !== '' && item.lastName !== '' ? ' ' : ''
             const newItem = {
                 ...item,
-                value: item.firstName + ' ' + item.lastName,
+                value: item.firstName + spaceText + item.lastName,
                 phoneNumberList: item.phoneNumberList.filter((phone) => phone !== ''),
                 emailList: item.emailList.filter((email) => email !== ''),
                 addressList: item.addressList.filter((address) => address !== ''),
             }
 
-            updateContactAction(newItem)
-            navigation.navigate('Contact_detail', {item: newItem});
+            updateContactAction(newItem,id ?? newItem.id)
+            InteractionManager.runAfterInteractions(() => {
+                setTimeout(() => {
+                    reset();
+                    navigateToContactDetailScreen({id: id ?? newItem.id})
+                }, 1000)
+            })
         }
-    }, [navigation,item,updateContactAction])
+
+    }, [navigation,item,updateContactAction,navigateToContactDetailScreen,reset])
 
     return (
         <Container>
             <Header
                 renderLeftButton={() => (
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <TouchableOpacity onPress={goBack}>
                         <CustomTitleLeftButton>Huỷ</CustomTitleLeftButton>
                     </TouchableOpacity>
                 )}
@@ -191,17 +208,16 @@ const CreateContactScreen = () => {
                         ListFooterComponent={
                         <>
                             <WrapAvatarContainer>
-                                <Avatar isButton setData={setItem}/>
+                                <Avatar isButton source={item.avatar} setData={setItem}/>
                             </WrapAvatarContainer>
                             <WrapBody>
                                 <WrapTextInput>
-                                    {textInputList.map((value,index) => {
-                                        return (
+                                    {textInputList.map((value,index) => (
                                             <CustomTextInput
                                                 autoFocus={index === 0}
                                                 key={index}
                                                 placeholder={value.label}
-                                                value={item[value.keyName]}
+                                                value={item[value.keyName as keyof ContactInformation]}
                                                 onChangeText={(text: string) => {
                                                     const newItem = {
                                                         ...item,
@@ -209,18 +225,16 @@ const CreateContactScreen = () => {
                                                     }
                                                     setItem(newItem)
                                                 }}
-                                                placeholderTextColor={'#BDBDBD'}/>
-                                        )
-                                    })}
+                                                placeholderTextColor={'#BDBDBD'}
+                                            />
+                                    ))}
                                 </WrapTextInput>
                                 {buttonList.map((b,index) => (
                                     <CustomButtonListContainer
                                         key={index}
-                                        title={b.title}
-                                        keyName={b.keyName}
                                         setData={setItem}
-                                        data={b.data}
-                                        keyboardType={b.keyboardType}/>
+                                        {...b}
+                                    />
                                 ))}
                             </WrapBody>
                         </>

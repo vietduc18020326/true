@@ -9,4 +9,13 @@ export interface ContactInformation {
     emailList: Array<string>;
     addressList: Array<string>;
     birthday: string;
+    key?: string;
+}
+
+export interface ContactDetailScreenProps {
+    id?: string;
+}
+
+export interface CreateContactScreenProps extends ContactDetailScreenProps {
+    item?: ContactInformation;
 }

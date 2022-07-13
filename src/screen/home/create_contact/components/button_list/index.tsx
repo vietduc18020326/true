@@ -14,12 +14,13 @@ const WrapButtonList = styled.View<{marginBottom: number}>`
   align-items: center;
 `
 
-const CustomButtonListContainer = ({title,keyName,setData,keyboardType,data} : {
+const CustomButtonListContainer = ({title,keyName,setData,keyboardType,data,label} : {
     title: string;
     keyName:string;
     setData: Function;
     keyboardType?: KeyboardTypeOptions;
     data?: Array<string> | string;
+    label?: string;
 }) => {
     const [items,setItems] = useState<Array<{
         id: string;
@@ -117,9 +118,9 @@ const CustomButtonListContainer = ({title,keyName,setData,keyboardType,data} : {
                 }}
             />
             {
-                keyboardType ? (
+                keyboardType && label ? (
                     items.length > 0 && items.map((item,index) => (
-                        <RemoveButton key={item.id} item={item} onRemove={onRemoveItem} onChange={onChange} keyboardType={keyboardType}/>
+                        <RemoveButton key={item.id} item={item} label={label} onRemove={onRemoveItem} onChange={onChange} keyboardType={keyboardType}/>
                     ))
                 ) : (
                     dateString !== '' && (

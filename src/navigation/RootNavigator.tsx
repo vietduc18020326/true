@@ -4,8 +4,8 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 
 import LoginScreen from "../screen/login/LoginScreen";
 import DrawerNavigator from "./DrawerNavigator";
-import ContactDetailScreen from "../screen/home/contact_detail";
-import CreateContactScreen from "../screen/home/create_contact";
+import ContactDetailScreen from "../screen/home/contact_detail/ContactDetailScreen";
+import CreateContactScreen from "../screen/home/create_contact/CreateContactScreen";
 
 const Stack = createNativeStackNavigator()
 
@@ -19,8 +19,8 @@ function RootNavigator() {
             >
                 <Stack.Screen name={'Login'} component={LoginScreen} />
                 <Stack.Screen name={'Home'} component={DrawerNavigator}/>
-                <Stack.Screen name={'Contact_detail'} component={ContactDetailScreen}/>
                 <Stack.Screen name={'Create_contact'} component={CreateContactScreen}/>
+                <Stack.Screen name={'Contact_detail'} component={ContactDetailScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
     )

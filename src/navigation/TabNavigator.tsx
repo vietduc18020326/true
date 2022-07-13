@@ -1,10 +1,11 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {Platform} from "react-native";
 // @ts-ignore
 import styled from "styled-components/native";
 
-import ContactScreen from "../screen/home/contact";
-import HistoryScreen from "../screen/home/history";
+import ContactScreen from "../screen/home/contact/ContactScreen";
+import HistoryScreen from "../screen/home/history/HistoryScreen";
 import {ICONS} from "../assets";
 
 const Tab = createBottomTabNavigator();
@@ -19,7 +20,13 @@ function TabNavigator() {
         <Tab.Navigator
             screenOptions={{
                 headerShown: false,
-                tabBarStyle: {backgroundColor: '#F2A54A'},
+                tabBarStyle: {
+                    backgroundColor: '#F2A54A',
+                    height: Platform.OS === 'ios' ? 80 : 60
+                },
+                tabBarLabelStyle: {
+                  paddingVertical: Platform.OS === 'ios' ? 0 : 8
+                },
                 tabBarActiveTintColor: '#FFFFFF',
                 tabBarInactiveTintColor: '#FFDAAE',
         }}>

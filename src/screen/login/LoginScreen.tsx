@@ -1,18 +1,12 @@
 import React from 'react'
 // @ts-ignore
 import styled from "styled-components/native";
-import {Platform, Image, View} from "react-native";
-import {getStatusBarHeight} from "react-native-iphone-x-helper";
-import {useNavigation} from '@react-navigation/native'
 
-import {IMAGES} from '../../assets'
+import {GROUP, GROUP_SMALL, IMAGES, LOADING} from '../../assets'
 import Container from "../components/Container";
 import Header from "../components/Header";
-
-const Wrap = styled.SafeAreaView`
- flex: 1;
-  background-color: #ffffff;
-`;
+import {navigateToContactScreen} from "../../utils/navigation";
+import {Colors} from "../../themes/Colors";
 
 const WrapHeader = styled.View<{paddingTop: number}>`
   flex: 1;
@@ -44,7 +38,7 @@ font-size: 30px;
   line-height: 35px;
   letter-spacing: 0.12px;
   font-weight: 700;
-  color: #F2A54A;
+  color: ${Colors.yellowOrange};
   text-align: center;
 `
 
@@ -53,7 +47,7 @@ const SubTitle = styled.Text`
    font-size: 15px;
   line-height: 18px;
   letter-spacing: 0.12px;
-  color: #333;
+  color: ${Colors.darkCharcoal};
   text-align: center;
   margin-top: 7px;
 `
@@ -83,7 +77,7 @@ const Note = styled.Text`
   line-height: 20px;
   letter-spacing: -0.24px;
   text-align: center;
-  color: #828282;
+  color: ${Colors.oldSilver};
 `
 
 const WrapButton = styled.View`
@@ -108,7 +102,7 @@ const TitleButton = styled.Text`
   font-size: 15px;
   line-height: 20px;
   letter-spacing: -0.24px;
-  color: #ffffff;
+  color: ${Colors.white};
 `
 
 const ManualLoginButton = styled(LoginButton)`
@@ -120,23 +114,21 @@ const ManualLoginButton = styled(LoginButton)`
 `
 
 const SubTitleButton = styled(TitleButton)`
-  color: #F2A54A;
+  color: ${Colors.yellowOrange};
 `
 
 
 const LoginScreen = () => {
-    const navigation = useNavigation<any>();
-
     const onNavToHomeScreen = React.useCallback(() => {
-        navigation.navigate('Home')
-    },[navigation])
+        navigateToContactScreen()
+    },[navigateToContactScreen])
 
     return (
         <Container>
             <Header/>
             <WrapHeader>
-                <ImageGroupSmall source={IMAGES.groupSmall} resizeMode={'stretch'} />
-                <ImageGroup source={IMAGES.group} resizeMode={'contain'} />
+                <ImageGroupSmall source={GROUP_SMALL} resizeMode={'stretch'} />
+                <ImageGroup source={GROUP} resizeMode={'contain'} />
             </WrapHeader>
             <WrapBody>
                 <WrapTitle>
@@ -148,7 +140,7 @@ const LoginScreen = () => {
                     </SubTitle>
                 </WrapTitle>
                 <WrapLoading>
-                    <Loading source={IMAGES.loading} resizeMode={'stretch'}/>
+                    <Loading source={LOADING} resizeMode={'stretch'}/>
                 </WrapLoading>
             </WrapBody>
             <WrapFooter>

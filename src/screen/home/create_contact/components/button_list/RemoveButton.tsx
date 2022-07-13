@@ -3,13 +3,14 @@ import {TextInput, TouchableOpacity, KeyboardTypeOptions} from "react-native";
 // @ts-ignore
 import styled from "styled-components/native";
 
-import {ICONS} from "../../../../../assets";
+import {REMOVE} from "../../../../../assets";
+import {Colors} from "../../../../../themes/Colors";
 
 const WrapButton = styled.View`
   height: 44px;
   width: 90%;
   border-bottom-width: 0.5px;
-  border-bottom-color: #00000016;
+  border-bottom-color: ${Colors.black10};
 `
 
 const CustomRemoveButtonContainer = styled.View`
@@ -24,14 +25,14 @@ const Icon = styled.Image`
 `
 
 const CustomTextInput = styled.TextInput`
-  color: #2F80ED;
+  color: ${Colors.bleuDeFrance};
   flex: 1;
   font-weight: 400;
   font-size: 15px;
   line-height: 22px;
   letter-spacing: -0.41px;
   height: 44px;
-  padding-bottom: 10px;
+  padding-bottom: 5px;
 `
 
 const CustomButton = styled.TouchableOpacity`
@@ -45,10 +46,10 @@ const CustomTitleButton = styled.Text`
   font-size: 15px;
   line-height: 22px;
   letter-spacing: -0.41px;
-  color: #2F80ED;
+  color: ${Colors.bleuDeFrance};
 `
 
-const RemoveButton = ({onRemove,item,onChange,keyboardType} : {
+const RemoveButton = ({onRemove,item,onChange,keyboardType,label} : {
     onRemove: (item: string) => void;
     onChange: (id?: string, data?: string) => void;
     item: {
@@ -56,6 +57,7 @@ const RemoveButton = ({onRemove,item,onChange,keyboardType} : {
         id: string;
     };
     keyboardType?: KeyboardTypeOptions;
+    label?: string
 }) => {
     const onPress = React.useCallback(() => {
         onRemove && onRemove(item.id)
@@ -69,10 +71,17 @@ const RemoveButton = ({onRemove,item,onChange,keyboardType} : {
         <WrapButton>
             <CustomRemoveButtonContainer>
                 <TouchableOpacity onPress={onPress}>
-                    <Icon source={ICONS.remove}/>
+                    <Icon source={REMOVE}/>
                 </TouchableOpacity>
                 {keyboardType ? (
-                    <CustomTextInput autoFocus={item.data === ''} keyboardType={keyboardType} value={item.data} onChangeText={onChangeText}/>
+                    <CustomTextInput
+                        autoFocus={item.data === ''}
+                        placeholder={label ?? ''}
+                        keyboardType={keyboardType}
+                        value={item.data}
+                        onChangeText={onChangeText}
+                        placeholderTextColor={'#BDBDBD'}
+                    />
                 ) : (
                     <CustomButton onPress={() => {
                         onChange && onChange()

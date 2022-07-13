@@ -5,8 +5,9 @@ import {Text, TouchableOpacity, View} from "react-native";
 
 import Container from "../../components/Container";
 import Header from '../../components/Header'
-import {ICONS} from "../../../assets";
+import {CAMERA, INFO_OUTLINE, MISSED_VIDEO_CALL, MORE, PHONE} from "../../../assets";
 import {useNavigation} from "@react-navigation/native";
+import {Colors} from "../../../themes/Colors";
 
 const Icon = styled.Image`
   width: 24px;
@@ -15,60 +16,60 @@ const Icon = styled.Image`
 
 const list = [
     {
-        iconLeft: ICONS.phone,
+        iconLeft: PHONE,
         name: 'Nguyen Tien Nam',
         phoneNumber: '0429427544',
         history: 'Hom nay',
-        iconRight: ICONS.info_outline
+        iconRight: INFO_OUTLINE
     },
     {
-        iconLeft: ICONS.phone,
+        iconLeft: PHONE,
         name: 'Vu Manh Linh',
         phoneNumber: '04244227544',
         history: 'Hom nay',
-        iconRight: ICONS.info_outline
+        iconRight: INFO_OUTLINE
     },
     {
-        iconLeft: ICONS.phone,
+        iconLeft: PHONE,
         name: 'Tran Thai Ha',
         phoneNumber: '042942742542',
         history: 'Hom nay',
-        iconRight: ICONS.info_outline
+        iconRight: INFO_OUTLINE
     },
     {
-        iconLeft: ICONS.phone,
+        iconLeft: PHONE,
         name: 'Nguyen Ngoc Linh',
         phoneNumber: '04294929294',
         history: 'Thu Tu',
-        iconRight: ICONS.info_outline
+        iconRight: INFO_OUTLINE
     },
     {
-        iconLeft: ICONS.phone,
+        iconLeft: PHONE,
         name: 'Nguyen Tien Nam',
         phoneNumber: '0429427544',
         history: 'Hom nay',
-        iconRight: ICONS.info_outline
+        iconRight: INFO_OUTLINE
     },
     {
-        iconLeft: ICONS.phone,
+        iconLeft: PHONE,
         name: 'Nguyen Tien Nam',
         phoneNumber: '0429427544',
         history: 'Hom nay',
-        iconRight: ICONS.info_outline
+        iconRight: INFO_OUTLINE
     },
     {
-        iconLeft: ICONS.missed_video_call,
+        iconLeft: MISSED_VIDEO_CALL,
         name: 'Bao Ngoc',
         phoneNumber: '04294243414',
         history: 'Thu Hai',
-        iconRight: ICONS.info_outline
+        iconRight: INFO_OUTLINE
     },
     {
-        iconLeft: ICONS.missed_video_call,
+        iconLeft: MISSED_VIDEO_CALL,
         name: 'Duong Le',
         phoneNumber: '04294413415',
         history: 'Thu Bay',
-        iconRight: ICONS.info_outline
+        iconRight: INFO_OUTLINE
     },
 ]
 
@@ -92,7 +93,7 @@ const WrapRightCell = styled.View`
   flex: 5;
   padding-right: 16px;
   border-bottom-width: 1px;
-  border-bottom-color: #00000016;
+  border-bottom-color: ${Colors.black10};
 `
 const WrapText = styled.View`
   flex: 2;
@@ -104,7 +105,7 @@ const Name = styled.Text`
   font-size: 16px;
   line-height: 16px;
   letter-spacing: 0.12px;
-  color: #333333;
+  color: ${Colors.darkCharcoal};
   margin-bottom: 8px;
 `
 
@@ -113,7 +114,7 @@ const Info = styled.Text`
   font-size: 14px;
   line-height: 16px;
   letter-spacing: 0.12px;
-  color: #828282;
+  color: ${Colors.oldSilver};
   margin-right: 20px;
 `
 
@@ -156,12 +157,12 @@ const HistoryScreen = () => {
                 title={'Lich sử'}
                 renderLeftButton={() => (
                     <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                        <Icon source={ICONS.more} resizeMode={'stretch'}/>
+                        <Icon source={MORE} resizeMode={'stretch'}/>
                     </TouchableOpacity>
                 )}
                 renderRightButton={() => (
                     <TouchableOpacity onPress={() => navigation.navigate('Create_contact')}>
-                        <Icon source={ICONS.camera} resizeMode={'stretch'}/>
+                        <Icon source={CAMERA} resizeMode={'stretch'}/>
                     </TouchableOpacity>
                 )}/>
             <FlatList

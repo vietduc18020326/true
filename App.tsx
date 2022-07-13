@@ -7,13 +7,12 @@
  */
 
 import React from 'react';
-
-import RootNavigator from "./src/navigation/RootNavigator";
 import {Provider} from "react-redux";
 import { PersistGate } from 'redux-persist/integration/react'
 
 // import {store} from './src/store';
-import {store,persistor} from './src/store/configureStore'
+import {store,persistor} from './src/store'
+import Routes from "./src/Routes";
 
 const App = () => {
 
@@ -26,7 +25,7 @@ const App = () => {
         {/*    // showHideTransition={statusBarTransition}*/}
         {/*/>*/}
         <PersistGate persistor={persistor} loading={null}>
-            <RootNavigator/>
+            <Routes/>
         </PersistGate>
       </Provider>
 

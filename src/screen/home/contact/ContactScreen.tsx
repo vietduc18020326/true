@@ -1,15 +1,16 @@
 import React, {useCallback, useMemo, useState} from 'react'
 // @ts-ignore
 import styled from "styled-components/native";
-import {Text, TouchableOpacity,View, Dimensions, TextInput, KeyboardAvoidingView, Platform} from 'react-native'
+import {Text, TouchableOpacity, Dimensions, TextInput, KeyboardAvoidingView, Platform} from 'react-native'
 import { AlphabetList } from 'react-native-section-alphabet-list'
-import {useNavigation} from "@react-navigation/native";
-import {getBottomSpace} from "react-native-iphone-x-helper";
 
 import Container from "../../components/Container";
 import Header from '../../components/Header'
-import {ICONS,IMAGES} from "../../../assets";
-import {useContactList,useContact} from "../../../store";
+import {AVATAR_DEFAULT, CAMERA, MORE, SEARCH} from "../../../assets";
+import {useContactById, useContactIdList} from "../../../store/contact";
+import {removeVietnameseTones} from "../../../utils/string";
+import {navigateToContactDetailScreen, navigateToCreateContactScreen, openDrawer} from "../../../utils/navigation";
+import {Colors} from "../../../themes/Colors";
 
 const Icon = styled.Image`
   width: 24px;
@@ -42,13 +43,13 @@ const SearchIcon = styled.Image`
 const CustomSectionHeader = styled.View`
   width: 100%;
   height: 36px;
-  background-color: white;
+  background-color: ${Colors.white};
   justify-content: center;
   padding-left: 16px;
 `
 
 const BackgroundSectionHeader = styled.View`
-  background-color: #E0E0E0;
+  background-color: ${Colors.chineseWhite};
   opacity: 0.5;
   position: absolute;
   top: 0;
@@ -62,12 +63,12 @@ const TitleHeader = styled.Text`
   font-size: 15px;
   line-height: 16px;
   letter-spacing: 0.12px;
-  color: #333333;
+  color: ${Colors.darkCharcoal};
 `
 
-const CustomItem = styled.TouchableOpacity<{width: number}>`
+const CustomItem = styled.TouchableOpacity`
   height: 64px;
-  width: ${(p: { width: number; }) => (p.width - 30)}px;
+  width: ${Dimensions.get('screen').width - 30}px;
   flex-direction: row;
 `
 
@@ -80,7 +81,7 @@ const WrapAvatar = styled.View`
 const WrapInfo = styled.View`
   flex: 4;
   justify-content: center;
-  border-bottom-color: #00000016;
+  border-bottom-color: ${Colors.black10};
   border-bottom-width: 1px;
 `
 
@@ -98,7 +99,7 @@ const AvatarDefault = styled.Image`
 const WrapAvatarDefault = styled.View`
   width: 40px;
   height: 40px;
-  background-color: #F2F2F2;
+  background-color: ${Colors.anti_flashWhite};
   border-radius: 50px;
   justify-content: center;
   align-items: center;
@@ -109,7 +110,7 @@ const NameText = styled.Text`
   font-size: 16px;
   line-height: 16px;
   letter-spacing: 0.12px;
-  color: #333333;
+  color: ${Colors.darkCharcoal};
   margin-bottom: 5px;
 `
 
@@ -118,59 +119,55 @@ const PhoneNumberText = styled.Text`
   font-size: 14px;
   line-height: 16px;
   letter-spacing: 0.12px;
-  color: #828282;
+  color: ${Colors.oldSilver};
 `
 
-
 const ContactScreen = () => {
-    const navigation = useNavigation<any>();
-    const contactsId: any = useContactList();
-
     const [textSearch, setTextSearch] = useState('')
+    const contactsId: any = useContactIdList();
 
-    console.log(contactsId)
+    const Ids = useMemo(() => {
+        let _Ids = contactsId;
 
-    const data = useMemo(() => {
-        let _data = contactsId ? contactsId.map((contact: any) => ({
-            ...contactsId,
-            key: contactsId
-        })) : []
-        //
-        // if(textSearch !== '') {
-        //     _data = _data.filter((d: any) => d.value.toUpperCase().includes(textSearch.toUpperCase()))
-        // }
+        if(textSearch !== '') {
+            _Ids = _Ids.filter((d: any) => removeVietnameseTones(d.value).toUpperCase().includes(removeVietnameseTones(textSearch).toUpperCase()))
+        }
 
-        return [];
-    },[contactsId,textSearch])
+        return _Ids;
+    },[textSearch,contactsId])
 
     const onNavToContactDetailScreen = React.useCallback((id: any) => {
-        navigation.navigate('Contact_detail',{id: id.key})
-    },[navigation])
+        navigateToContactDetailScreen({id: id.key})
+    },[navigateToContactDetailScreen])
+
+    const onNavToCreateContactScreen = React.useCallback(() => {
+        navigateToCreateContactScreen()
+    },[navigateToCreateContactScreen])
 
     const renderCustomItem = useCallback((id: any) => {
-        const item = useContact(id.key)
+        const item = useContactById(id.key)
 
         const onPress = () => {
             onNavToContactDetailScreen(id);
         }
 
         return (
-            <CustomItem width={Dimensions.get('screen').width} onPress={onPress}>
+            <CustomItem onPress={onPress}>
                 <WrapAvatar>
                     {item?.avatar ? <Avatar source={item.avatar}/> : (
                         <WrapAvatarDefault>
-                            <AvatarDefault source={ICONS.avatar_default}/>
+                            <AvatarDefault source={AVATAR_DEFAULT}/>
                         </WrapAvatarDefault>
                     )}
                 </WrapAvatar>
                 <WrapInfo>
-                    <NameText>{item?.value ?? ''}</NameText>
+                    <NameText>{item?.value !== '' ? item?.value : 'Không có tên'}</NameText>
                     <PhoneNumberText numberOfLines={1}>
-                        {item?.phoneNumberList && item.phoneNumberList.length > 0 && item.phoneNumberList.map((phone: string,index: number) => (
+                        {item?.phoneNumberList && item.phoneNumberList.length > 0 ? item.phoneNumberList.map((phone: string,index: number) => (
                             <Text key={index}>
                                 {phone} {' '}
                             </Text>
-                        ))}
+                        )) : 'Không có số điện thoại'}
                     </PhoneNumberText>
                 </WrapInfo>
             </CustomItem>
@@ -182,13 +179,13 @@ const ContactScreen = () => {
             <Header
                 title={'Liên hệ'}
                 renderLeftButton={() => (
-                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                        <Icon source={ICONS.more} resizeMode={'stretch'}/>
+                    <TouchableOpacity onPress={openDrawer}>
+                        <Icon source={MORE} resizeMode={'stretch'}/>
                     </TouchableOpacity>
                 )}
                 renderRightButton={() => (
-                    <TouchableOpacity onPress={() => navigation.navigate('Create_contact')}>
-                        <Icon source={ICONS.camera} resizeMode={'stretch'}/>
+                    <TouchableOpacity onPress={onNavToCreateContactScreen}>
+                        <Icon source={CAMERA} resizeMode={'stretch'}/>
                     </TouchableOpacity>
                 )}/>
             <KeyboardAvoidingView
@@ -197,10 +194,10 @@ const ContactScreen = () => {
             >
                 <CustomTextInput>
                     <WrapSearchIcon>
-                        <SearchIcon source={ICONS.search}/>
+                        <SearchIcon source={SEARCH}/>
                     </WrapSearchIcon>
                     <TextInput
-                        style={{flex: 1, opacity: 0.5}}
+                        style={{flex: 1, opacity: 0.5, color: '#333333'}}
                         placeholder="Tìm kiếm danh bạ"
                         placeholderTextColor="#BDBDBD"
                         underlineColorAndroid="transparent"
@@ -210,8 +207,8 @@ const ContactScreen = () => {
                 </CustomTextInput>
                 <AlphabetList
                     uncategorizedAtTop
-                    data={contactsId ?? []}
-                    style={{paddingBottom: getBottomSpace() + 22}}
+                    data={Ids ?? []}
+                    style={{flex: 1}}
                     renderCustomItem={renderCustomItem}
                     renderCustomSectionHeader={(section) => (
                         <CustomSectionHeader>
@@ -219,8 +216,9 @@ const ContactScreen = () => {
                             <TitleHeader>{section.title}</TitleHeader>
                         </CustomSectionHeader>
                     )}
+                    index={customIndex}
                     indexLetterStyle={{
-                        color: '#F2A54A',
+                        color: Colors.yellowOrange,
                         fontWeight: '400',
                         fontSize: 13,
                         lineHeight: 22,
@@ -229,10 +227,10 @@ const ContactScreen = () => {
                     indexLetterContainerStyle={{
                         marginBottom: 0,
                         width: 20,
-                        height: 25
+                        height: 25,
                     }}
                     letterListContainerStyle={{
-                        justifyContent: 'flex-start',
+                        justifyContent: 'center',
                         paddingTop: 8,
                     }}
                     indexContainerStyle={{
@@ -242,6 +240,42 @@ const ContactScreen = () => {
             </KeyboardAvoidingView>
         </Container>
     );
-}
+};
+
+const customIndex: Array<string> = [
+    'a',
+    'ă',
+    'â',
+    'b',
+    'c',
+    'd',
+    'đ',
+    'e',
+    'ê',
+    'f',
+    'j',
+    'g',
+    'h',
+    'i',
+    'k',
+    'l',
+    'm',
+    'n',
+    'o',
+    'ô',
+    'ơ',
+    'p',
+    'q',
+    'r',
+    's',
+    't',
+    'u',
+    'ư',
+    'v',
+    'x',
+    'w',
+    'y',
+    'z',
+];
 
 export default ContactScreen;

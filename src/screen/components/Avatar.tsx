@@ -6,13 +6,14 @@ import {
     launchImageLibrary
 } from 'react-native-image-picker';
 
-import {ICONS} from "../../assets";
+import {AVATAR_DEFAULT, CAMERA_ROUND} from "../../assets";
 import {TouchableOpacity,View, PermissionsAndroid, Platform} from "react-native";
+import {Colors} from "../../themes/Colors";
 
 const AvatarDefaultView = styled.View`
   width: 100px;
   height: 100px;
-  background-color: #F2F2F2;
+  background-color: ${Colors.anti_flashWhite};
   border-radius: 50px;
   align-items: center;
   justify-content: center;
@@ -150,12 +151,16 @@ const Avatar = ({source,isButton,setData} : {source?: any; isButton?: boolean,se
                 {source || filePath ? (
                     <>
                         <Image source={filePath ? {uri: filePath} : source}/>
-                        <Icon source={ICONS.camera_round}/>
+                        <>
+                            {isButton && <Icon source={CAMERA_ROUND}/>}
+                        </>
                     </>
                 ) : (
                     <AvatarDefaultView>
-                        <AvatarDefault source={ICONS.avatar_default}/>
-                        <Icon source={ICONS.camera_round}/>
+                        <AvatarDefault source={AVATAR_DEFAULT}/>
+                        <>
+                            {isButton && <Icon source={CAMERA_ROUND}/>}
+                        </>
                     </AvatarDefaultView>
                 )}
             </WrapContainer>
