@@ -9,7 +9,17 @@
     "moduleResolution": "node",
     "noEmit": true,
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "paths": {
+      "@/*": ["src/*"]
+      // "react-native-redash/lib/module/v1": [
+      //   "./node_modules/react-native-redash/lib/typescript/v1/index.d.ts"
+      // ]
+    },
+    "typeRoots": [
+      "src",
+      "./node_modules/@types",
+    ]
   },
   "exclude": [
     "node_modules",

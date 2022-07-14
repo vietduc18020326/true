@@ -1,6 +1,5 @@
 import React, {useCallback} from 'react'
 import {Linking, Modal, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
-// @ts-ignore
 import styled from "styled-components/native";
 
 const WrapModal = styled.View`
