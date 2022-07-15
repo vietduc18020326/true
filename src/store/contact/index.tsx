@@ -1,10 +1,11 @@
-import {createSlice, Store, PayloadAction} from '@reduxjs/toolkit';
-import {ContactInformation} from '../../type';
-import {useSelector} from 'react-redux';
-import {AVATAR1} from '../../assets';
+import {createDynamicReducer} from '@/utils/createDynamicReducer';
+// @ts-ignore
+import {batch, useSelector} from 'react-redux';
+import {ContactInformation} from '@/type';
+import {AVATAR1} from '@/assets';
 
 const initContact = {
-  byId: {
+  byKey: {
     lCUTs2: {
       avatar: null,
       phoneNumberList: ['0931924', '09331348424', '0931924313', '09313244'],
@@ -36,135 +37,41 @@ const initContact = {
   },
 };
 
-// let state ={
-//     byId: {
-//         "lCUTs2": {
-//             avatar: null,
-//             phoneNumberList: ['0931924','09331348424','0931924313','09313244'],
-//             value: 'Lillie-Mai Allen',
-//             firstName: 'Allen',
-//             lastName: 'Lillie-Mai',
-//             company: '',
-//             birthday: '',
-//             emailList: ['cdabc@gmail.com'],
-//             addressList: [],
-//             id: 'lCUTs2'
-//         },
-//         // ...
-//     },
-//     query: {
-//         all: [ "lCUTs2", "TXdL0c", ],
-//     }
-// }
-//
-// const update = (state, payload: {item: ContactInformation}) => {
-//     return {
-//         ...state,
-//         byId: {
-//             ...state.byId,
-//             [payload.item.id]: payload.item
-//         },
-//         query: {
-//             all: [...new Set(Object.keys(state.byId))] // lay phan tu khac nhau
-//         }
-//     }
-// }
-//
-// const delete = (state, payload: {id: string}) => {
-//     const _all = [...state.query.all]
-//     const removedQuery = _all.filter(id => payload.id !== id)
-//
-//     return {
-//         ...state,
-//         query: {
-//             ...state.query,
-//             all: removedQuery
-//         }
-//     }
-// }
-//
-// const useItemById = (id: string) => {
-//     return useSelector(state => state.byId[id])
-// }
+const {setStore, reducer, sync, useByKey, useKeysByQuery, setQueries} =
+  createDynamicReducer<ContactInformation>('contacts', 'id', initContact);
 
-export const contactReducer = createSlice({
-  // dinh nghia 1 cai reducer su dung createSlide
-  name: 'contactReducer',
-  initialState: initContact,
-  reducers: {
-    update: (state, payload: PayloadAction<ContactInformation>) => {
-      const _byId = {
-        ...state.byId,
-        [payload.payload.id]: payload.payload,
-      };
+export const setContactStore = setStore;
+export const contactReducer = reducer;
+export const useContact = useByKey;
+export const useContactId = useKeysByQuery;
+export const syncContact = sync;
+export const setContactQueries = setQueries;
 
-      return {
-        ...state,
-        byId: _byId,
-        query: {
-          all: [...new Set(Object.keys(_byId))],
-        },
-      };
-    },
-    deleteContact: (state, payload: PayloadAction<string>) => {
-      const _all = [...state.query.all];
-      const _byId = {...state.byId};
-      const removedQuery = _all.filter(id => payload.payload !== id);
-      if (payload.payload) {
-        // @ts-ignore
-        delete _byId[payload.payload];
-      }
+export const updateAllContacts = (
+  contacts: ContactInformation[],
+  ids: string[],
+) => {
+  let _ids: string[] = [...ids];
 
-      return {
-        ...state,
-        byId: _byId,
-        query: {
-          ...state.query,
-          all: removedQuery,
-        },
-      };
-    },
-  },
-});
+  for (let contact of contacts) {
+    _ids.push(contact.id.toString());
+  }
 
-export const {update, deleteContact} = contactReducer.actions; // goi ra cac action cua contactReducer
+  _ids = [...new Set(_ids)];
 
-let _store: Store | undefined;
-
-// export const store = configureStore({ // khoi tao reducer
-//     reducer: {
-//         contactReducer: contactReducer.reducer
-//     }
-// })
-
-export const constantSetStore = (store: Store) => {
-  _store = store;
+  batch(() => {
+    syncContact(contacts);
+    setContactQueries({
+      all: _ids,
+    });
+  });
 };
 
-export const useContactIdList = (value?: string) => {
-  // connect vao store de lay ra danh sach
-  return useSelector((state: any) =>
-    state.contacts.query.all.map((key: string) => ({
+export const useContactByKey = () => {
+  return useSelector(state =>
+    state.contacts.query['all'].map(key => ({
       key,
-      value: state.contacts.byId[key].value,
+      value: state.contacts.byKey[key].value,
     })),
   );
-};
-
-export const useContactById = (id: string) => {
-  return useSelector((state: any) => state.contacts.byId[id]);
-};
-
-export const updateContactAction = (val: ContactInformation, id: string) => {
-  // dispatch vao action update cua todoReducer
-  const newValue = {
-    ...val,
-    key: id,
-  };
-  return _store && _store.dispatch(update(newValue));
-};
-
-export const removeContactAction = (id: string) => {
-  // dispatch vao action update cua todoReducer
-  return _store && _store.dispatch(deleteContact(id));
 };
