@@ -1,21 +1,15 @@
-import React, {useCallback, useMemo, useState, memo} from 'react';
-// @ts-ignore
+import React, {memo, useCallback, useMemo, useState} from 'react';
 import styled from 'styled-components/native';
-import {TouchableOpacity, KeyboardAvoidingView, Platform} from 'react-native';
-
+import {KeyboardAvoidingView, Platform, TouchableOpacity} from 'react-native';
 import Container from '@/screen/components/Container';
 import Header from '@/screen/components/Header';
 import {CAMERA, MORE, SEARCH} from '@/assets';
-import {useContactIdList} from '@/store/contact';
 import {removeVietnameseTones} from '@/utils/string';
-import {
-  navigateToCreateContactScreen,
-  openDrawer,
-} from '@/utils/navigation';
+import {navigateToCreateContactScreen, openDrawer} from '@/utils/navigation';
 import {Colors} from '@/themes/Colors';
-import {ContactIdListProps} from '@/type';
 import CustomAlphabetList from './CustomAlphabetList';
-import {BaseStyles} from "@/themes/BaseStyles";
+import {BaseStyles} from '@/themes/BaseStyles';
+import {useContactByKey,} from '@/store/contact';
 
 const Icon = styled.Image`
   width: 24px;
@@ -53,16 +47,15 @@ const InputSearch = styled.TextInput`
 
 const ContactScreen = () => {
   const [textSearch, setTextSearch] = useState('');
-  const contactIds: ContactIdListProps[] = useContactIdList();
+
+  const contactIds = useContactByKey();
 
   const ids = useMemo(() => {
     let _ids = contactIds;
 
     if (textSearch !== '') {
       _ids = _ids.filter((d: any) =>
-        removeVietnameseTones(d.value)
-          .toUpperCase()
-          .includes(removeVietnameseTones(textSearch).toUpperCase()),
+        d.value.includes(removeVietnameseTones(textSearch).toUpperCase()),
       );
     }
 
@@ -70,7 +63,7 @@ const ContactScreen = () => {
   }, [textSearch, contactIds]);
 
   const onNavToCreateContactScreen = useCallback(() => {
-    navigateToCreateContactScreen();
+    navigateToCreateContactScreen({});
   }, [navigateToCreateContactScreen]);
 
   const onChangeText = useCallback((text: string) => setTextSearch(text), []);
@@ -84,14 +77,13 @@ const ContactScreen = () => {
   }, [openDrawer]);
 
   const renderRightButton = useCallback(
-      () => (
-          <TouchableOpacity onPress={onNavToCreateContactScreen}>
-            <Icon source={CAMERA} resizeMode={'stretch'} />
-          </TouchableOpacity>
-      ),
-      [onNavToCreateContactScreen],
+    () => (
+      <TouchableOpacity onPress={onNavToCreateContactScreen}>
+        <Icon source={CAMERA} resizeMode={'stretch'} />
+      </TouchableOpacity>
+    ),
+    [onNavToCreateContactScreen],
   );
-
 
   return (
     <Container>

@@ -1,8 +1,7 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {KeyboardTypeOptions} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
-// @ts-ignore
 import styled from 'styled-components/native';
 
 import RemoveButton from './RemoveButton';
@@ -23,7 +22,7 @@ interface Props {
   label?: string;
 }
 
-const CustomButtonListContainer = ({
+const CustomButtonList = ({
   title,
   keyName,
   setData,
@@ -166,4 +165,4 @@ const CustomButtonListContainer = ({
   );
 };
 
-export default CustomButtonListContainer;
+export default memo(CustomButtonList);

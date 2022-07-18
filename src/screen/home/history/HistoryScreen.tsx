@@ -1,7 +1,7 @@
-import React, {useCallback} from 'react';
+import React, {memo, useCallback} from 'react';
 // @ts-ignore
 import styled from 'styled-components/native';
-import {TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 
 import Container from '@/screen/components/Container';
 import Header from '@/screen/components/Header';
@@ -129,11 +129,17 @@ const FlatList = styled.FlatList`
   margin-top: 10px;
 `;
 
+const WrapIconLeft = styled.View`
+  flex: 1;
+  align-items: center;
+  padding-top: 7px;
+`;
+
 const Cell = ({iconLeft, name, phoneNumber, history, iconRight}: CellProps) => (
   <WrapCell>
-    <View style={{flex: 1, alignItems: 'center', paddingTop: 7}}>
+    <WrapIconLeft>
       <Icon source={iconLeft} />
-    </View>
+    </WrapIconLeft>
     <WrapRightCell>
       <WrapText>
         <Name>{name}</Name>
@@ -172,6 +178,8 @@ const HistoryScreen = () => {
     [onNavToCreateContactScreen],
   );
 
+  const renderItem = useCallback(({item}: any) => <Cell {...item} />, []);
+
   return (
     <Container>
       <Header
@@ -182,10 +190,10 @@ const HistoryScreen = () => {
       <FlatList
         data={list}
         keyExtractor={keyExtractor}
-        renderItem={({item}: any) => <Cell {...item} />}
+        renderItem={renderItem}
       />
     </Container>
   );
 };
 
-export default HistoryScreen;
+export default memo(HistoryScreen);

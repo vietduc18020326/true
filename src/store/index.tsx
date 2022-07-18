@@ -1,27 +1,23 @@
-import { createStore } from 'redux'
-import { persistStore, persistReducer } from 'redux-persist'
+import {createStore} from 'redux';
+import {persistStore, persistReducer} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {createSlice, configureStore, PayloadAction, combineReducers} from '@reduxjs/toolkit'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-
-import {constantSetStore, contactReducer} from "./contact";
+import {combineReducers} from '@reduxjs/toolkit';
+import {setContactStore, contactReducer} from './contact';
 
 export const appReducers = combineReducers({
-    contacts: contactReducer.reducer
-})
+  contacts: contactReducer,
+});
 
 const persistConfig = {
-    key: 'root',
-    whitelist: ['contacts'],
-    storage: AsyncStorage,
-}
+  key: 'root',
+  whitelist: ['contacts'],
+  storage: AsyncStorage,
+};
 
-const persistedReducer = persistReducer(persistConfig, appReducers)
+const persistedReducer = persistReducer(persistConfig, appReducers);
 
-export const store = createStore(persistedReducer)
-export const persistor = persistStore(store)
-
+export const store = createStore(persistedReducer);
+export const persistor = persistStore(store);
 
 // set store
-constantSetStore(store)
-
+setContactStore(store);

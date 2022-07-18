@@ -1,7 +1,7 @@
 import React, {memo} from 'react';
 import {GROUP, GROUP_SMALL, LOADING} from '@/assets';
-import Container from '../components/Container';
-import Header from '../components/Header';
+import Container from "@/screen/components/Container";
+import Header from "@/screen/components/Header";
 import {navigateToContactScreen} from '@/utils/navigation';
 import {Colors} from '@/themes/Colors';
 import styled from 'styled-components/native';
@@ -151,4 +151,4 @@ const LoginScreen = memo(() => {
   );
 });
 
-export default LoginScreen;
+export default memo(LoginScreen);

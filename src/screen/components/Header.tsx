@@ -4,6 +4,11 @@ import {View, Platform, StatusBar} from 'react-native';
 import {getStatusBarHeight} from 'react-native-iphone-x-helper';
 import {Colors} from '@/themes/Colors';
 
+const WrapHeader = styled.View<{backgroundColor: string}>`
+  padding-top: ${getStatusBarHeight() + 16}px;
+  background-color: ${p => p.backgroundColor ?? Colors.white};
+`;
+
 const HeaderView = styled.View`
   width: 100%;
   justify-content: space-between;
@@ -35,11 +40,7 @@ const Header = ({
   backgroundColor,
 }: Props) => {
   return (
-    <View
-      style={{
-        paddingTop: getStatusBarHeight() + 16,
-        backgroundColor: backgroundColor ?? Colors.white,
-      }}>
+    <WrapHeader backgroundColor={backgroundColor}>
       <StatusBar
         translucent
         backgroundColor={backgroundColor ? Colors.transparent : Colors.white}
@@ -50,7 +51,7 @@ const Header = ({
         {title && <Title>{title}</Title>}
         {renderRightButton && renderRightButton()}
       </HeaderView>
-    </View>
+    </WrapHeader>
   );
 };
 

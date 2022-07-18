@@ -3,6 +3,8 @@ import {createDynamicReducer} from '@/utils/createDynamicReducer';
 import {batch, useSelector} from 'react-redux';
 import {ContactInformation} from '@/type';
 import {AVATAR1} from '@/assets';
+import {store} from '@/store';
+
 
 const initContact = {
   byKey: {
@@ -51,16 +53,25 @@ export const updateAllContacts = (
   contacts: ContactInformation[],
   ids: string[],
 ) => {
-  let _ids: string[] = [...ids];
+  let newIds: string[] = [];
 
   for (let contact of contacts) {
-    _ids.push(contact.id.toString());
+    newIds.push(contact.id.toString());
   }
-
-  _ids = [...new Set(_ids)];
 
   batch(() => {
     syncContact(contacts);
+    setContactQueries({
+      all: [...ids, ...newIds],
+    });
+  });
+};
+
+export const removeContact = (id: string, ids?: string[]) => {
+  const contactIds = store.getState()?.contacts?.query['all'] || [];
+  let _ids: string[] = contactIds.filter(_id => _id !== id);
+
+  batch(() => {
     setContactQueries({
       all: _ids,
     });

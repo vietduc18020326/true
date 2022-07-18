@@ -1,5 +1,4 @@
-import React, {useCallback} from 'react';
-// @ts-ignore
+import React, {memo, useCallback} from 'react';
 import styled from 'styled-components/native';
 import {TextInputProps} from 'react-native';
 
@@ -41,4 +40,4 @@ const CustomTextInput = (props: Props) => {
   return <STextInput onChangeText={onChangeText} {...props} />;
 };
 
-export default CustomTextInput;
+export default memo(CustomTextInput);

@@ -78,7 +78,7 @@ const DrawerStackComponent = memo(function DrawerStackComponent() {
         headerShown: false,
         swipeEnabled: false,
       }}
-      drawerContent={props => <DrawerContent {...props} />}
+      drawerContent={() => <DrawerContent />}
       initialRouteName={'Main'}>
       <DrawerStack.Screen name={'Main'} component={TabStackComponent} />
     </DrawerStack.Navigator>
@@ -91,10 +91,9 @@ export const ModalStackComponent = memo(function ModalStackComponent() {
       initialRouteName={'LoginScreen'}
       screenOptions={{
         headerShown: false,
-        // presentation: 'modal'
       }}>
-      <ModalStack.Screen name={'Home'} component={DrawerStackComponent} />
       <RootStack.Screen name={'LoginScreen'} component={LoginScreen} />
+      <ModalStack.Screen name={'Home'} component={DrawerStackComponent} />
       <RootStack.Screen
         name={'CreateContactScreen'}
         component={CreateContactScreen}

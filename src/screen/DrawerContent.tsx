@@ -1,10 +1,8 @@
-import React from 'react';
-// @ts-ignore
+import React, {memo} from 'react';
 import styled from 'styled-components/native';
-import {Text, View} from 'react-native';
 
-import {ADD_BOX, ASSIGNMENT_IND, AVATAR1} from '../assets';
-import {Colors} from '../themes/Colors';
+import {ADD_BOX, ASSIGNMENT_IND, AVATAR1} from '@/assets';
+import {Colors} from '@/themes/Colors';
 
 const WrapHeader = styled.View`
   flex: 1;
@@ -119,6 +117,11 @@ const TitleCell = styled(RoleText)`
   color: ${Colors.darkCharcoal};
 `;
 
+const WrapInfo = styled.View`
+  margin-left: 9px;
+  justify-content: center;
+`;
+
 const Cell = ({icon, title}: {icon: any; title: string}) => {
   return (
     <WrapCell>
@@ -133,10 +136,10 @@ const DrawerContent = () => {
     <>
       <WrapHeader>
         <Avatar source={AVATAR1} resizeMode="stretch" />
-        <View style={{marginLeft: 9, justifyContent: 'center'}}>
+        <WrapInfo>
           <UserName>Nguyen Tien Nam</UserName>
           <RoleText>Admin Admin</RoleText>
-        </View>
+        </WrapInfo>
       </WrapHeader>
       <WrapBody>
         <TopBody>
@@ -156,4 +159,4 @@ const DrawerContent = () => {
   );
 };
 
-export default DrawerContent;
+export default memo(DrawerContent);

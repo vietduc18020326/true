@@ -1,13 +1,13 @@
-import React, {useCallback} from 'react';
+import React, {memo, useCallback} from 'react';
 import styled from 'styled-components/native';
 import {AlphabetList, IData} from 'react-native-section-alphabet-list';
 import {Colors} from '@/themes/Colors';
 import {ContactIdListProps, ContactInformation} from '@/type';
-import {useContactById} from '@/store/contact';
 import {AVATAR_DEFAULT} from '@/assets';
-import {Dimensions, SectionListData, Text} from 'react-native';
+import {Dimensions, SectionListData, Text, View} from 'react-native';
 import {navigateToContactDetailScreen} from '@/utils/navigation';
-import {BaseStyles} from "@/themes/BaseStyles";
+import {BaseStyles} from '@/themes/BaseStyles';
+import {useContact} from '@/store/contact';
 
 const CustomSectionHeader = styled.View`
   width: 100%;
@@ -99,17 +99,21 @@ interface Props {
 const CustomAlphabetList = ({ids}: Props) => {
   const renderCustomItem = useCallback(
     (id: ContactIdListProps) => {
-      const item: ContactInformation = useContactById(id.key);
+      const contact: ContactInformation | undefined = useContact(id.key);
 
       const onPress = () => {
         navigateToContactDetailScreen({id: id.key});
       };
 
+      if (!contact) {
+        return <View />;
+      }
+
       return (
         <CustomItem onPress={onPress}>
           <WrapAvatar>
-            {item?.avatar ? (
-              <Avatar source={item.avatar} />
+            {contact?.avatar ? (
+              <Avatar source={contact.avatar} />
             ) : (
               <WrapAvatarDefault>
                 <AvatarDefault source={AVATAR_DEFAULT} />
@@ -117,14 +121,14 @@ const CustomAlphabetList = ({ids}: Props) => {
             )}
           </WrapAvatar>
           <WrapInfo>
-            <NameText>
-              {item?.value !== '' ? item?.value : 'Không có tên'}
-            </NameText>
+            <NameText>{contact?.value || 'Không có tên'}</NameText>
             <PhoneNumberText numberOfLines={1}>
-              {item?.phoneNumberList && item.phoneNumberList.length > 0
-                ? item.phoneNumberList.map((phone: string, index: number) => (
-                    <Text key={index}>{phone} </Text>
-                  ))
+              {contact?.phoneNumberList?.length > 0
+                ? (contact?.phoneNumberList || []).map(
+                    (phone: string, index: number) => (
+                      <Text key={index}>{phone} </Text>
+                    ),
+                  )
                 : 'Không có số điện thoại'}
             </PhoneNumberText>
           </WrapInfo>
@@ -152,24 +156,10 @@ const CustomAlphabetList = ({ids}: Props) => {
       renderCustomItem={renderCustomItem}
       renderCustomSectionHeader={renderCustomSectionHeader}
       index={customIndex}
-      indexLetterStyle={{
-        color: Colors.yellowOrange,
-        fontWeight: '400',
-        fontSize: 13,
-        lineHeight: 22,
-        letterSpacing: 0.12,
-      }}
-      indexLetterContainerStyle={{
-        width: 20,
-        height: 25,
-      }}
-      letterListContainerStyle={{
-        justifyContent: 'center',
-        paddingTop: 8,
-      }}
-      indexContainerStyle={{
-        width: 30,
-      }}
+      indexLetterStyle={BaseStyles.indexLetterStyle}
+      indexLetterContainerStyle={BaseStyles.indexLetterContainerStyle}
+      letterListContainerStyle={BaseStyles.letterListContainerStyle}
+      indexContainerStyle={BaseStyles.indexContainerStyle}
     />
   );
 };
@@ -210,4 +200,4 @@ const customIndex: Array<string> = [
   'z',
 ];
 
-export default CustomAlphabetList;
+export default memo(CustomAlphabetList);
